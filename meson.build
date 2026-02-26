@@ -38,8 +38,6 @@ NAME    = PACKAGE_NAME
 VERSION = PACKAGE_VERSION
 PACKAGE = PACKAGE_TARNAME
 
-message(PACKAGE_SUMMARY+'\n'+PACKAGE_DESCRIPTION)
-
 summary({'PROJECT_NAME'        : PROJECT_NAME,
          'PROJECT_VERSION'     : PROJECT_VERSION},
         section: 'Project macros')
@@ -149,7 +147,9 @@ summary({'datarootdir'       : configx.get('datarootdir'),
 
 ################################################################################
 
-__rpmwhy = configure_file(
+fs = import('fs')
+
+rpmwhy_sh = configure_file(
   input         : 'rpmwhy.sh',
   output        : 'rpmwhy',
   configuration : configx,
@@ -158,3 +158,24 @@ __rpmwhy = configure_file(
   install_mode  : 'rwxr-xr-x',
 )
 
+__pod2man = find_program(
+  'pod2man',
+  required : get_option('build-docs'),
+  disabler : true,
+)
+
+rpmwhy_1 = custom_target(
+  input       : rpmwhy_sh,
+  output      : fs.name(rpmwhy_sh) + '.1',
+  command     : [
+    __pod2man,
+    '--section', '1',
+    '--center', configx.get('PACKAGE_NAME'),
+    '--release', configx.get('PACKAGE_STRING'),
+    '@INPUT@',
+    '@OUTPUT@',
+  ],
+  install     : true,
+  install_dir : configx.get('mandir')/'man1',
+  install_tag : 'man',
+)

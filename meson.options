@@ -6,6 +6,7 @@
 ## type: {string,boolean,combo,integer,feature} CAN expanded
 ## by 'configuration_data()'
 
+option('build-docs', type:'feature', description:'generate manpages')
 
 ################################################################################
 ## NO USER SERVICABLE PARTS BELOW
