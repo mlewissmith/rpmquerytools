@@ -4,6 +4,8 @@ project(
   'rpmwhy',
   version: '1.0',
   default_options: [],
+  license: 'Unlicense',
+  license_files: 'LICENSE',
 )
 
 _package_bugreport   = 'https://github.com/mlewissmith/rpmwhy/issues'
