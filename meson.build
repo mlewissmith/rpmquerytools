@@ -151,8 +151,8 @@ summary({'datarootdir'       : configx.get('datarootdir'),
 
 fs = import('fs')
 
-rpmwhy_sh = configure_file(
-  input         : 'rpmwhy.sh',
+rpmwhy_bash = configure_file(
+  input         : 'rpmwhy.bash',
   output        : 'rpmwhy',
   configuration : configx,
   install       : true,
@@ -167,8 +167,8 @@ __pod2man = find_program(
 )
 
 rpmwhy_1 = custom_target(
-  input       : rpmwhy_sh,
-  output      : fs.name(rpmwhy_sh) + '.1',
+  input       : rpmwhy_bash,
+  output      : fs.name(rpmwhy_bash) + '.1',
   command     : [
     __pod2man,
     '--section', '1',
