@@ -183,9 +183,16 @@ rpmwhy_1 = custom_target(
   install_tag : 'man',
 )
 
+__bash_completion = dependency(
+  'bash-completion',
+  required : get_option('with-bash-completions'),
+  disabler : true,
+)
+
+
 install_data(
   'rpmwhy.bash-completion',
   rename      : fs.name(rpmwhy_bash),
-  install_dir : dependency('bash-completion').get_variable('completionsdir'),
+  install_dir : __bash_completion.get_variable('completionsdir'),
   install_tag : 'bin',
 )
