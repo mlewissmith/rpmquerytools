@@ -1,19 +1,18 @@
 ## -*- meson -*-
 
 project(
-  'rpmwhy',
-  version: '1.0.2',
+  'rpmquerytools',
+  version: '1.1.0',
   default_options: [],
   license: 'Unlicense',
   #license_files: 'LICENSE',
 )
 
-_package_bugreport   = 'https://github.com/mlewissmith/rpmwhy/issues'
-_package_url         = 'https://github.com/mlewissmith/rpmwhy'
-_package_summary     = 'Query all packages that require/recommend CAPABILITY'
+_package_bugreport   = 'https://github.com/mlewissmith/rpmquerytools/issues'
+_package_url         = 'https://github.com/mlewissmith/rpmquerytools'
+_package_summary     = 'Tools to query installed package RPMs'
 _package_description = '''
-Why is a given package on my system?
-rpmwhy is a wrapper around rpm -q --what{requires,recommends}.
+rpmwhy - Why is a given package on my system?
 '''
 
 ################################################################################
