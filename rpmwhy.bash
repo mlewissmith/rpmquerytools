@@ -1,9 +1,7 @@
 #!/usr/bin/bash
 set -u
 
-# weak (reverse) dependencies:
-# Recommends <=> Supplements
-# Suggests <=> Enhances
+VERBOSITY=1
 
 ANSI_RESET="\e[0m"
 ANSI_BOLD="\e[1m"
@@ -33,6 +31,8 @@ EMPH=${ANSI_BOLD}${ANSI_GREEN}
 
 function _usage { pod2usage $0; }
 function _man { pod2usage --verbose 2 $0; }
+function vecho { [[ $VERBOSITY -ge 1 ]] && echo "$@"; }
+
 function rpmq { rpm --query --queryformat=${QF:-'%{NAME}\n'} --nodigest --nosignature "$@"; }
 
 function _rpmwhy {
@@ -51,28 +51,32 @@ function _rpmwhy {
         echo -e "$this recommended-by ${EMPH}${recommendedby}${ANSI_RESET}"
     done
 
-    for supplements in $(QF="[%{SUPPLEMENTS}\n]" rpmq $this)
-    do
-        [[ $? == 0 ]] || break
-        echo -e "$this supplements ${EMPH}${supplements}${ANSI_RESET}"
-    done
-
     for suggestedby in $(rpmq --whatsuggests $this)
     do
         [[ $? == 0 ]] || break
         echo -e "$this suggested-by ${EMPH}${suggestedby}${ANSI_RESET}"
     done
 
-    for enhances in $(QF="[%{ENHANCES}\n]" rpmq $this)
-    do
-        [[ $? == 0 ]] || break
-        echo -e "$this enhances ${EMPH}${enhances}${ANSI_RESET}"
-    done
+    # supplements <=> reverse recommends
+    # for supplements in $(QF="[%{SUPPLEMENTS}\n]" rpmq $this)
+    # do
+    #     [[ $? == 0 ]] || break
+    #     echo -e "$this supplements ${EMPH}${supplements}${ANSI_RESET}"
+    # done
+
+    # enhances <=> reverse suggests
+    # for enhances in $(QF="[%{ENHANCES}\n]" rpmq $this)
+    # do
+    #     [[ $? == 0 ]] || break
+    #     echo -e "$this enhances ${EMPH}${enhances}${ANSI_RESET}"
+    # done
 }
 
 while getopts qvhH opt
 do
     case $opt in
+        q) VERBOSITY=0 ;;
+        v) ((VERBOSITY++)) ;;
         h) _usage ; exit 0 ;;
         H) _man ; exit 0 ;;
         *) _usage ; exit 1 ;;
@@ -87,11 +91,11 @@ do
     do
         [[ $? == 0 ]] || break
         [[ $arg == $providedby ]] ||
-            echo "$arg provided-by $providedby"
+            vecho "$arg provided-by $providedby"
         for provided in $(QF="[%{PROVIDES}\n]" rpmq $providedby)
         do
             [[ $providedby == $provided ]] ||
-                echo "$providedby provides $provided"
+               vecho "$providedby provides $provided"
             [[ $provided == $arg ]] ||
                 _rpmwhy $provided
         done
@@ -110,7 +114,7 @@ rpmwhy - Why is a given package on my system?
 
 =head1 SYNOPSIS
 
-B<rpmwhy> I<PACKAGE>|I<FILE>|I<CAPABILITY> ...
+B<rpmwhy> [B<-q>|B<-v>] I<PACKAGE>|I<FILE>|I<CAPABILITY> ...
 
 B<rpmwhy> B<-h>|B<-H>
 
@@ -122,6 +126,14 @@ B<rpmwhy> is a wrapper around B<rpm -q --what{requires,recommends}>.
 
 =over 4
 
+=item B<-q>
+
+Quiet
+
+=item B<-v>
+
+Verbose
+
 =item B<-h>
 
 Brief help
@@ -131,10 +143,6 @@ Brief help
 Long help
 
 =back
-
-=head1 SEE ALSO
-
-   rpm --test --erase PACKAGE
 
 =cut
 
