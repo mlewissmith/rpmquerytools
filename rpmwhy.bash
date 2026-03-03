@@ -7,7 +7,31 @@ set -u
 
 QF="%{NAME}\n"
 
-function echoerr { echo "$@" >&2; }
+ANSI_RESET="\e[0m"
+ANSI_BOLD="\e[1m"
+ANSI_FAINT="\e[2m"
+ANSI_ITALIC="\e[3m"
+ANSI_UNDERLINE="\e[4m"
+
+ANSI_BLACK="\e[30m"
+ANSI_RED="\e[31m"
+ANSI_GREEN="\e[32m"
+ANSI_YELLOW="\e[33m"
+ANSI_BLUE="\e[34m"
+ANSI_MAGENTA="\e[35m"
+ANSI_CYAN="\e[36m"
+ANSI_WHITE="\e[37m"
+
+ANSI_BRIGHTBLACK="\e[90m"
+ANSI_BRIGHTRED="\e[91m"
+ANSI_BRIGHTGREEN="\e[92m"
+ANSI_BRIGHTYELLOW="\e[93m"
+ANSI_BRIGHTBLUE="\e[94m"
+ANSI_BRIGHTMAGENTA="\e[95m"
+ANSI_BRIGHTCYAN="\e[96m"
+ANSI_BRIGHTWHITE="\e[97m"
+
+EMPH=${ANSI_BOLD}${ANSI_GREEN}
 
 function _usage { pod2usage $0; }
 function _man { pod2usage --verbose 2 $0; }
@@ -20,31 +44,31 @@ function _rpmwhy {
     for requiredby in $(rpmq --whatrequires $this)
     do
         [[ $? == 0 ]] || break
-        echo "$this required-by $requiredby"
+        echo -e "$this required-by ${EMPH}${requiredby}${ANSI_RESET}"
     done
 
     for recommendedby in $(rpmq --whatrecommends $this)
     do
         [[ $? == 0 ]] || break
-        echo "$this recommended-by $recommendedby"
+        echo -e "$this recommended-by ${EMPH}${recommendedby}${ANSI_RESET}"
     done
 
     for supplements in $(QF="[%{SUPPLEMENTS}\n]" rpmq $this)
     do
         [[ $? == 0 ]] || break
-        echo "$this supplements $supplements"
+        echo -e "$this supplements ${EMPH}${supplements}${ANSI_RESET}"
     done
 
     for suggestedby in $(rpmq --whatsuggests $this)
     do
         [[ $? == 0 ]] || break
-        echo "$this suggested-by $suggestedby"
+        echo -e "$this suggested-by ${EMPH}${suggestedby}${ANSI_RESET}"
     done
 
     for enhances in $(QF="[%{ENHANCES}\n]" rpmq $this)
     do
         [[ $? == 0 ]] || break
-        echo "$this enhances $enhances"
+        echo -e "$this enhances ${EMPH}${enhances}${ANSI_RESET}"
     done
 }
 
