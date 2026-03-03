@@ -5,8 +5,6 @@ set -u
 # Recommends <=> Supplements
 # Suggests <=> Enhances
 
-QF="%{NAME}\n"
-
 ANSI_RESET="\e[0m"
 ANSI_BOLD="\e[1m"
 ANSI_FAINT="\e[2m"
@@ -35,7 +33,7 @@ EMPH=${ANSI_BOLD}${ANSI_GREEN}
 
 function _usage { pod2usage $0; }
 function _man { pod2usage --verbose 2 $0; }
-function rpmq { rpm --query --queryformat="$QF" --nodigest --nosignature "$@"; }
+function rpmq { rpm --query --queryformat=${QF:-'%{NAME}\n'} --nodigest --nosignature "$@"; }
 
 function _rpmwhy {
     this=$1
