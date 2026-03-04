@@ -194,3 +194,14 @@ install_data(
   install_dir : __bash_completion.get_variable('completionsdir'),
   install_tag : 'bin',
 )
+
+
+rpmlsf_sh = configure_file(
+  input         : 'rpmlsf.sh',
+  output        : 'rpmlsf',
+  configuration : configx,
+  install       : true,
+  install_dir   : configx.get('bindir'),
+  install_mode  : 'rwxr-xr-x',
+  install_tag   : 'bin',
+)
