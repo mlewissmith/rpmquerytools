@@ -147,6 +147,8 @@ summary({'datarootdir'       : configx.get('datarootdir'),
          'pkgsharedstatedir' : configx.get('pkgsharedstatedir')},
         section: 'Directory macros: autoconf compatibility')
 
+subdir('.meta')
+
 ################################################################################
 
 fs = import('fs')
