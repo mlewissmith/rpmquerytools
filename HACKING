@@ -1,3 +1,5 @@
+# rpmquerytools
+
 * Canonical source
   https://github.com/mlewissmith/rpmquerytools
 
@@ -8,8 +10,8 @@
              README, COMPILING etc
 
 * Integrate branches via 'main' branch
-  - merge 'wip/XXX' into 'main' (consider squashing)
-  - merge 'main' into 'wip/YYY'
+  merge 'wip/XXX' into 'main' (consider squashing)
+  merge 'main' into 'wip/YYY'
   Don't merge directly from 'wip/XXX' to 'wip/YYY'
 
 * Release checklist
@@ -17,5 +19,6 @@
   [ ] 'meson.build' version
   [ ] 'meson.build' _package_summary
   [ ] 'meson.build' _package_description
+  [ ] meson compile .meta
   [ ] git changelog -x -t VERSION | git tag VERSION -F-
   [ ] Create github release ; generate release notes

@@ -1,4 +1,4 @@
-@PACKAGE_NAME@
+# @PACKAGE_NAME@
 
 meson setup BUILDDIR --reconfigure --wipe
 meson configure -C BUILDDIR

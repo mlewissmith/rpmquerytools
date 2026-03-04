@@ -1,4 +1,5 @@
 # rpmquerytools
+
 Tools to query installed package RPMs
 
 ```
@@ -7,7 +8,9 @@ rpmlsf - List contents of rpm packages
 ```
 
 ## Manifest
+
 ### rpmwhy
+
 Why is a given package on my system?
 
 ```
@@ -34,4 +37,5 @@ SEE ALSO
 ```
 
 ### rpmlsf
+
 List contents of rpm packages
