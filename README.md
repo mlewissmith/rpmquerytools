@@ -6,9 +6,8 @@ rpmwhy - Why is a given package on my system?
 rpmlsf - List contents of rpm packages
 ```
 
---------------------------------------------------------------------------------
-
-## rpmwhy
+## Manifest
+### rpmwhy
 Why is a given package on my system?
 
 ```
@@ -34,5 +33,5 @@ SEE ALSO
        rpm --test --erase PACKAGE
 ```
 
-## rpmlsf
+### rpmlsf
 List contents of rpm packages
