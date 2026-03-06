@@ -196,8 +196,8 @@ install_data(
   install_tag : 'bin',
 )
 
-__rpmlsf = configure_file(
-  input         : 'rpmlsf.sh',
+rpmlsf = configure_file(
+  input         : 'rpmlsf.bash',
   output        : 'rpmlsf',
   configuration : configx,
   install       : true,
@@ -208,7 +208,7 @@ __rpmlsf = configure_file(
 
 install_data(
   'rpmlsf.bash-completion',
-  rename      : fs.name(__rpmlsf),
+  rename      : fs.name(rpmlsf),
   install_dir : dependency('bash-completion',
                            required : get_option('with-bash-completions'),
                            disabler : true,
