@@ -75,15 +75,12 @@ function _rpmwhy {
     # done
 }
 
-while getopts pPcCqvhH-: opt
+while getopts PCqh-: opt
 do
     case $opt in
-	p) LOOKUP=true ;;
-	P) LOOKUP=false ;;
-	c) LOOKDOWN=true ;;
-	C) LOOKDOWN=false ;;
+        P) LOOKUP=false ;;
+        C) LOOKDOWN=false ;;
         q) VERBOSITY=0 ;;
-        v) ((VERBOSITY++)) ;;
         h) _usage0 ; exit 0 ;;
         -) case $OPTARG in
                help) _usage1 ; exit 0 ;;
@@ -138,67 +135,83 @@ rpmwhy - Why is a given package on my system?
 
 =head1 SYNOPSIS
 
-B<rpmwhy> [OPTION] I<PACKAGE>|I<FILE>|I<CAPABILITY> ...
+B<rpmwhy> [I<OPTION>] I<PACKAGENAME>|I<FILENAME>|I<CAPABILITY> ...
 
-B<rpmwhy> B<--help>
+B<rpmwhy> B<-h>|B<--help>|B<--man>|B<--version>
 
 =head1 DESCRIPTION
 
-B<rpmwhy> is a wrapper around B<rpm -q --what{requires,recommends}>.
+B<rpmwhy>(1) shows why a given I<PACKAGENAME>, I<FILENAME> or package I<CAPABILITY> is
+installed on the system.
+
+=over
+
+=item *
+
+Which packages require/recommend/suggest the command-line arguments
+
+=item *
+
+Which packages require/recommend/suggest the parent package owning the
+command-line arguments.  Option B<-P> suppresses this.
+
+=item *
+
+Which packages require/recommend/suggest the capabilities provided by the
+package owning the command-line arguments.  Option B<-C> suppresses this.
+
+=back
 
 =head1 OPTIONS
 
 =head2 General options
 
-=over 4
-
-=item B<-p>
-
-Show details for providing parent package. I<default>
+=over
 
 =item B<-P>
 
-No details for providing parent package.
-
-=item B<-c>
-
-Show details for child capabilities of parent package. I<default>
+Suppress details for providing parent package.
 
 =item B<-C>
 
-No details for child capabilities of parent package. I<default>
+Suppress details for child capabilities of parent package.
 
 =item B<-q>
 
-=item B<-v> (default)
-
-Verbosity
+Suppress program progress output.
 
 =back
 
-=head2 Information
+=head2 Information options
 
-=over 4
+=over
 
 =item B<-h>
 
-Brief help
+Brief help.
 
 =item B<--help>
 
-Long help
+Long help.
 
 =item B<--man>
 
-Manpage
+Manpage.
 
 =item B<--version>
 
-Display program version
+Display program version.
 
 =back
 
+=head1 BUGS
+
+B<rpmwhy>(1) calls B<rpm -q> under the hood, potentially I<many> times.
+Therefore it can be slow.
+
 =head1 SEE ALSO
+
+B<rpm>(8)
 
 L<< B<@PACKAGE_NAME@>|@PACKAGE_URL@ >>
 
