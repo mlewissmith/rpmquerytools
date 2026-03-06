@@ -12,6 +12,12 @@
   merge 'main' into 'wip/YYY'
   Don't merge directly from 'wip/XXX' to 'wip/YYY'
 
+; Commit messages refer to gh issues
+;   GH-xxx or #xxx autolink
+;   fix[es|ed][:] #xxx
+;   close[s|d][:] #xxx
+;   resolve[s|d][:] #xxx
+
 * Release checklist
   on 'main' branch
   [ ] 'meson.build' version
