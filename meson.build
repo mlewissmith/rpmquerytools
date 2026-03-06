@@ -159,12 +159,6 @@ __pod2man = find_program(
   disabler : true,
 )
 
-__pod2html = find_program(
-  'pod2html',
-  required : get_option('with-manpages'),
-  disabler : true,
-)
-
 __rpmwhy = configure_file(
   input         : 'rpmwhy.bash',
   output        : 'rpmwhy',
@@ -175,7 +169,7 @@ __rpmwhy = configure_file(
   install_tag   : 'bin',
 )
 
-custom_target(
+rpmwhy_1 = custom_target(
   input       : __rpmwhy,
   output      : fs.name(__rpmwhy) + '.1',
   command     : [
@@ -192,20 +186,6 @@ custom_target(
   install_tag : 'man',
 )
 
-
-custom_target(
-  input       : __rpmwhy,
-  output      : fs.name(__rpmwhy) + '.1.html',
-  command     : [
-    __pod2html,
-    '--infile=@INPUT@',
-    '--outfile=@OUTPUT@',
-  ],
-  install     : true,
-  install_dir : configx.get('htmldir'),
-  install_tag : 'man',
-)
-
 install_data(
   'rpmwhy.bash-completion',
   rename      : fs.name(__rpmwhy),
@@ -216,7 +196,6 @@ install_data(
   install_tag : 'bin',
 )
 
-
 __rpmlsf = configure_file(
   input         : 'rpmlsf.sh',
   output        : 'rpmlsf',
@@ -225,4 +204,31 @@ __rpmlsf = configure_file(
   install_dir   : configx.get('bindir'),
   install_mode  : 'rwxr-xr-x',
   install_tag   : 'bin',
+)
+
+
+
+## [DEBUG]
+rpmwhy_1_html = custom_target(
+  input   : __rpmwhy,
+  output  : fs.name(__rpmwhy) + '.1.html',
+  command : [ 'pod2html', '--infile=./@INPUT@' ],
+  capture : true,
+  install : false,
+)
+
+## [DEBUG]
+rpmwhy_1_ps = custom_target(
+  input   : rpmwhy_1,
+  output  : fs.name(rpmwhy_1.full_path()) + '.ps',
+  command : [ 'man', '-t', './@INPUT@' ],
+  capture : true,
+  install : false,
+)
+
+## [DEBUG]
+alias_target(
+  '.mandoc',
+  rpmwhy_1_html,
+  rpmwhy_1_ps,
 )
