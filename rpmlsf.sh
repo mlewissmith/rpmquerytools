@@ -1,63 +1,47 @@
-#!/usr/bin/sh
-
-# THIS FILE BASED ON 'rpmls' from 'rpmdevtools-9.5'
-#
-# rpmlsf -- List contents of rpm packages
-#
-# This program is free software; you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2 of the License, or
-# (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
-
+#!/bin/bash
 set -u
 
 all=
 owner=
 
-usage() {
+function _usage {
     cat <<-EOF
-	rpmlsf -- List contents of rpm packages
+	rpmlsf - List contents of rpm packages
 
-	Usage: rpmlsf [-a] [-l] PKG...
-	       rpmlsf -?
+	Usage:
+	    rpmlsf [-a] [-l] PKG...
+	    rpmlsf -h
 
 	Options:
 	   -a  list all packages matching a PKG
 	   -l  use a long listing format
-	   -?  print this help and exit
+	   -h  print this help and exit
 
-	The PKG arguments may either be package
-	name expressions or file names.
+	The PKG arguments may either be package name expressions or file names.
+
+	- @PACKAGE_STRING@
 	EOF
     exit
 }
 
-while getopts 'al?' opt
+while getopts 'alh' opt
 do
     case $opt in
         a) all=a ;;
         l) owner='%-8{fileusername} %-8{filegroupname} ' ;;
-        ?) usage ;;
+        h) _usage ;;
     esac
 done
-
 shift $((OPTIND - 1))
+[[ -z "$@" ]] && _usage
 
 qf="[%-4{fileflags:fflags} %-11{filemodes:perms} $owner%{filenames}\\n]"
 
-for arg in "$@" ; do
+for arg in "$@"
+do
     a=$all
     p=
-    if [ -f "$arg" ]
+    if [[ -f "$arg" ]]
     then
         a=
         p=p
