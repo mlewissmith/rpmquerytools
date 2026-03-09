@@ -1,65 +1,17 @@
-# -*- shell-script -*-
+## -*- shell-script -*-
+## https://www.gnu.org/software/bash/manual/html_node/Programmable-Completion.html
+## https://iridakos.com/programming/2018/03/01/bash-programmable-completion-tutorial
 
-# THIS FILE BASED ON 'rpmls' completions from 'rpmdevtools-9.5'
+# adapted from '/usr/share/bash-completion/completions/rpm'
 
-# bash completion for rpmdevtools
-# Requires bash-completion >= 20080705 (for _filedir)
+_rpmlsf_completions() {
+    local cur="${COMP_WORDS[COMP_CWORD]}"
 
-_rpmdev_uniqargs()
-{
-    local i j
-    for i in ${!COMPREPLY[@]}; do
-        for (( j=0; j < ${#COMP_WORDS[@]}; j++ )); do
-            if [[ $j -ne $COMP_CWORD && \
-                ${COMPREPLY[i]} == ${COMP_WORDS[j]} ]]; then
-                unset COMPREPLY[i]
-                break
-            fi
-        done
-    done
-}
-
-_rpmdev_installed_packages()
-{
-    if declare -F _rpm_installed_packages &>/dev/null ; then
-        _rpm_installed_packages
-    elif declare -F _xfunc &>/dev/null ; then
-        # bash-completion 1.90+ dynamic loading
-        _xfunc rpm _rpm_installed_packages
-    fi
-}
-
-_rpmdev_curprev()
-{
-    if declare -F _get_comp_words_by_ref &>/dev/null ; then
-        _get_comp_words_by_ref cur prev
+    if [[ $cur == */* ]]
+    then
+        compopt -o filenames
+        COMPREPLY=( $(compgen -f -- "$cur") )
     else
-        cur=$1 prev=$2
+        COMPREPLY=( $(rpm -qa --nodigest --nosignature --queryformat='%{NAME} ' "${cur}*" 2>/dev/null) )
     fi
-}
-
-_rpmdev_rpmfiles()
-{
-    if [[ ${#@} -ne 0 ]] ; then # called directly as completion function
-        local cur prev ; _rpmdev_curprev "$2" "$3"
-    fi
-    _filedir '[rs]pm'
-    _rpmdev_uniqargs
-}
-
-_rpmlsf()
-{
-    COMPREPLY=()
-
-    local cur prev ; _rpmdev_curprev "$2" "$3"
-
-    if [[ "$cur" == -* ]] ; then
-        COMPREPLY=( $( compgen -W '-l' -- "$cur" ) )
-        _rpmdev_uniqargs
-        return
-    fi
-
-    [[ $cur != */* ]] && _rpmdev_installed_packages
-    _rpmdev_rpmfiles
-} &&
-complete -F _rpmlsf -o filenames rpmlsf
+} && complete -F _rpmlsf_completions rpmlsf
