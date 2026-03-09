@@ -94,8 +94,9 @@ B<rpmwhat> B<-h>|B<--help>|B<--man>|B<--version>
 
 =head1 DESCRIPTION
 
-B<rpmwhat>(1) lists the requirements of a given package, and the installed
-packages which provide those requirements.
+B<rpmwhat>(1) lists the required capabilities of a given package, and the
+installed packages which provide those capabilities.  This is essentially the
+same as C<rpm -q PACKAGE --requires --recommends>, but more verbose.
 
 =head1 OPTIONS
 

@@ -138,24 +138,25 @@ B<rpmwhy> B<-h>|B<--help>|B<--man>|B<--version>
 
 =head1 DESCRIPTION
 
-B<rpmwhy>(1) shows why a given I<PACKAGENAME>, I<FILENAME> or package
-I<CAPABILITY> is installed on the system.
+B<rpmwhy>(1) lists the provided capabilities of a given package, and the
+installed packages which require those capabilities.  Specifically:
 
 =over
 
 =item *
 
-Which packages require/recommend/suggest the command-line arguments
+which packages require the capability.
 
 =item *
 
-Which packages require/recommend/suggest the parent package owning the
-command-line arguments.  Option B<-P> suppresses this.
+which packages require the parent package owning the capability.
+Option B<-P> suppresses this.
 
 =item *
 
-Which packages require/recommend/suggest the capabilities provided by the
-package owning the command-line arguments.  Option B<-C> suppresses this.
+which packages require the capabilities provided by the package owning the
+capability.
+Option B<-C> suppresses this.
 
 =back
 
