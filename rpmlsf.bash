@@ -43,11 +43,53 @@ exit
 
 =head1 NAME
 
+rpmlsf - List contents of rpm packages (long format)
+
 =head1 SYNOPSIS
+
+B<rpmlsf> [I<OPTIONS>] I<PACKAGENAME>|I<FILENAME>...
+
+B<rpmlsf> B<-h>|B<--help>|B<--man>|B<--version>
 
 =head1 DESCRIPTION
 
+B<rpmlsf>(1) lists the contents of the installed I<PACKAGENAME> or the rpm package
+file I<FILENAME>
+
 =head1 OPTIONS
+
+=head2 Information options
+
+=over
+
+=item B<-h>
+
+Brief help.
+
+=item B<--help>
+
+Long help.
+
+=item B<--man>
+
+Manpage.
+
+=item B<--version>
+
+Display program version.
+
+=back
+
+=head2 Advanced options
+
+=over
+
+=item B<-s> I<CHAR>
+
+Set the internal separator character used to columnate output.
+
+=back
+
 
 =head1 SEE ALSO
 
