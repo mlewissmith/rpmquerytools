@@ -43,7 +43,7 @@ exit
 
 =head1 NAME
 
-rpmlsf - List contents of rpm packages (long format)
+rpmlsf - list contents of rpm packages (long format)
 
 =head1 SYNOPSIS
 

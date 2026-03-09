@@ -84,7 +84,7 @@ exit
 
 =head1 NAME
 
-rpmwhat - What are a given package's dependencies?
+rpmwhat - list dependencies of rpm packages
 
 =head1 SYNOPSIS
 

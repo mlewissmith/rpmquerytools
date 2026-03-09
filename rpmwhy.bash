@@ -128,7 +128,7 @@ exit
 
 =head1 NAME
 
-rpmwhy - Why are given packages on my system?
+rpmwhy - list dependents of rpm packages
 
 =head1 SYNOPSIS
 

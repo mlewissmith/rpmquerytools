@@ -14,9 +14,9 @@ _package_summary     = 'Tools to query installed package RPMs'
 _package_description = '''
 Provides tools:
 
- * rpmwhy - Why are given packages on my system?
- * rpmwhat - What are the dependencies of given packages?
- * rpmlsf - List contents of rpm packages
+ * rpmwhy - list dependents of rpm packages
+ * rpmwhat - list dependencies of rpm packages
+ * rpmlsf - list contents of rpm packages (long format)
 '''
 
 ################################################################################
