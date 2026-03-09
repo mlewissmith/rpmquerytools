@@ -1,28 +1,26 @@
 #!/bin/bash
 set -u
 
-function _usage {
-    cat <<-EOF
-	rpmlsf - List contents of rpm packages
+s=^
 
-	Usage:
-	    rpmlsf PKG...
-	    rpmlsf -h
+function _usage { pod2usage --verbose 0 $0; exit ${1:-0}; }
+function _help { pod2usage --verbose 1 $0; exit ${1:-0}; }
+function _longhelp { pod2usage --verbose 2 $0; exit ${1:-0}; }
+function _version { echo "@PACKAGE_STRING@" ; exit ${1:-0}; }
 
-	Options:
-	   -h  print this help and exit
-
-	The PKG arguments may either be package name expressions or file names.
-
-	- @PACKAGE_STRING@
-	EOF
-    exit
-}
-
-while getopts 'alh' opt
+while getopts :s:h-: opt
 do
     case $opt in
+        s) s=$OPTARG ;;
         h) _usage ;;
+        -) case $OPTARG in
+               help) _help ;;
+               man) _longhelp ;;
+               version) _version ;;
+               *) _usage 1 ;;
+           esac
+           ;;
+        *) _usage 1 ;;
     esac
 done
 shift $((OPTIND - 1))
@@ -31,8 +29,30 @@ shift $((OPTIND - 1))
 for arg in "$@"
 do
     p=
-    [[ -f "$arg" ]] && p=p
+    [[ $arg == */* ]] && p=p
     rpm -q$p \
-        --queryformat="[%-2{fileflags:fflags} %-11{filemodes:perms} %-6{fileusername} %-6{filegroupname} %{filenames}\n]" \
-        --nodigest --nosignature "$arg"
+        --queryformat="[%{fileflags:fflags}$s%{filemodes:perms}$s%{fileusername}$s%{filegroupname}$s%{filenames}\n]" \
+        --nodigest --nosignature "$arg" | column -s$s -t
 done
+
+################################################################################
+exit
+: <<__DOCEND__
+
+=pod
+
+=head1 NAME
+
+=head1 SYNOPSIS
+
+=head1 DESCRIPTION
+
+=head1 OPTIONS
+
+=head1 SEE ALSO
+
+L<< B<@PACKAGE_NAME@>|@PACKAGE_URL@ >>
+
+=cut
+
+__DOCEND__
