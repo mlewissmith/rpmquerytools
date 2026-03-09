@@ -24,7 +24,9 @@ SYNOPSIS
     rpmwhat -h|--help|--man|--version
 
 DESCRIPTION
-    TBD
+    rpmwhat(1) lists the required capabilities of a given package, and the
+    installed packages which provide those capabilities. This is essentially
+    the same as "rpm -q PACKAGE --requires --recommends", but more verbose.
 
 OPTIONS
   General options
@@ -58,17 +60,16 @@ SYNOPSIS
     rpmwhy -h|--help|--man|--version
 
 DESCRIPTION
-    rpmwhy(1) shows why a given PACKAGENAME, FILENAME or package CAPABILITY
-    is installed on the system.
+    rpmwhy(1) lists the provided capabilities of a given package, and the
+    installed packages which require those capabilities. Specifically:
 
-    *   Which packages require/recommend/suggest the command-line arguments
+    *   which packages require the capability.
 
-    *   Which packages require/recommend/suggest the parent package owning
-        the command-line arguments. Option -P suppresses this.
+    *   which packages require the parent package owning the capability.
+        Option -P suppresses this.
 
-    *   Which packages require/recommend/suggest the capabilities provided
-        by the package owning the command-line arguments. Option -C
-        suppresses this.
+    *   which packages require the capabilities provided by the package
+        owning the capability. Option -C suppresses this.
 
 OPTIONS
   General options
