@@ -29,7 +29,12 @@ ANSI_BRIGHTMAGENTA="\e[95m"
 ANSI_BRIGHTCYAN="\e[96m"
 ANSI_BRIGHTWHITE="\e[97m"
 
-EMPH=${ANSI_BOLD}${ANSI_GREEN}
+cNFO=${ANSI_FAINT}${ANSI_CYAN}
+cPKG=${ANSI_BRIGHTCYAN}
+cCAP=${ANSI_ITALIC}${ANSI_FAINT}
+cDEP=${ANSI_BOLD}${ANSI_GREEN}
+c000=${ANSI_RESET}
+
 
 function _usage { pod2usage --verbose 0 $0; exit ${1:-0}; }
 function _help { pod2usage --verbose 1 $0; exit ${1:-0}; }
@@ -41,39 +46,46 @@ function vecho { [[ $VERBOSITY -ge 1 ]] && echo "$@"; }
 function rpmq { rpm --query --queryformat=${QF:-'%{NAME}\n'} --nodigest --nosignature "$@"; }
 
 function _rpmwhy {
-    this=$1
+    capability=$1
+    tag=${2:-""}
+
+    if [[ -n $tag ]] && [[ $tag != $capability ]]
+    then this="${cPKG}${tag}${cCAP}:${capability}${c000}"
+    else this="${cPKG}${capability}${c000}"
+    fi
+
     local IFS=$'\n'
 
-    for requiredby in $(rpmq --whatrequires $this)
+    for requiredby in $(rpmq --whatrequires $capability)
     do
         [[ $? == 0 ]] || break
-        echo -e "$this required-by ${EMPH}${requiredby}${ANSI_RESET}"
+        echo -e "$this required-by ${cDEP}${requiredby}${c000}"
     done
 
-    for recommendedby in $(rpmq --whatrecommends $this)
+    for recommendedby in $(rpmq --whatrecommends $capability)
     do
         [[ $? == 0 ]] || break
-        echo -e "$this recommended-by ${EMPH}${recommendedby}${ANSI_RESET}"
+        echo -e "$this recommended-by ${cDEP}${recommendedby}${c000}"
     done
 
-    for suggestedby in $(rpmq --whatsuggests $this)
+    for suggestedby in $(rpmq --whatsuggests $capability)
     do
         [[ $? == 0 ]] || break
-        echo -e "$this suggested-by ${EMPH}${suggestedby}${ANSI_RESET}"
+        echo -e "$this suggested-by ${cDEP}${suggestedby}${c000}"
     done
 
     # supplements <=> reverse recommends
-    # for supplements in $(QF="[%{SUPPLEMENTS}\n]" rpmq $this)
+    # for supplements in $(QF="[%{SUPPLEMENTS}\n]" rpmq $capability)
     # do
     #     [[ $? == 0 ]] || break
-    #     echo -e "$this supplements ${EMPH}${supplements}${ANSI_RESET}"
+    #     echo -e "$capability supplements ${cDEP}${supplements}${c000}"
     # done
 
     # enhances <=> reverse suggests
-    # for enhances in $(QF="[%{ENHANCES}\n]" rpmq $this)
+    # for enhances in $(QF="[%{ENHANCES}\n]" rpmq $capability)
     # do
     #     [[ $? == 0 ]] || break
-    #     echo -e "$this enhances ${EMPH}${enhances}${ANSI_RESET}"
+    #     echo -e "$capability enhances ${cDEP}${enhances}${c000}"
     # done
 }
 
@@ -106,17 +118,18 @@ do
         [[ $? == 0 ]] || break
         if [[ $providedby != $arg ]]
         then
-            vecho "$arg provided-by $providedby"
-            _rpmwhy $providedby
+            vecho -e "${cNFO}${arg} provided-by ${providedby}${c000}"
+            _rpmwhy $providedby $providedby
         fi
-
+        #echo
         $LOOKDOWN && for provided in $(QF="[%{PROVIDES}\n]" rpmq $providedby)
         do
             [[ $provided == $arg ]] && continue
             [[ $provided == $providedby ]] && continue
-            vecho "$providedby provides $provided"
-            _rpmwhy $provided
+            vecho -e "${cNFO}${providedby} provides ${provided}${c000}"
+            _rpmwhy $provided $providedby
         done
+        #echo
     done
 done
 
