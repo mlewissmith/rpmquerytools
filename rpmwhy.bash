@@ -1,9 +1,7 @@
 #!/usr/bin/bash
 set -u
 
-VERBOSITY=1
-LOOKUP=true
-LOOKDOWN=true
+VERBOSITY=2
 
 ANSI_RESET="\e[0m"
 ANSI_BOLD="\e[1m"
@@ -29,72 +27,72 @@ ANSI_BRIGHTMAGENTA="\e[95m"
 ANSI_BRIGHTCYAN="\e[96m"
 ANSI_BRIGHTWHITE="\e[97m"
 
-cNFO=${ANSI_FAINT}${ANSI_CYAN}
-cPKG=${ANSI_BRIGHTCYAN}
-cCAP=${ANSI_ITALIC}${ANSI_FAINT}
+cPKG=${ANSI_BOLD}
+cCAP=${ANSI_FAINT}${ANSI_ITALIC}
 cDEP=${ANSI_BOLD}${ANSI_GREEN}
 c000=${ANSI_RESET}
 
+################################################################################
 
 function _usage { pod2usage --verbose 0 $0; exit ${1:-0}; }
 function _help { pod2usage --verbose 1 $0; exit ${1:-0}; }
 function _longhelp { pod2usage --verbose 2 $0; exit ${1:-0}; }
-function _version { echo "@PACKAGE_STRING@" ; exit ${1:-0}; }
-
-function vecho { [[ $VERBOSITY -ge 1 ]] && echo "$@"; }
+function _version { echo "@PACKAGE_STRING@"; exit ${1:-0}; }
 
 function rpmq { rpm --query --queryformat=${QF:-'%{NAME}\n'} --nodigest --nosignature "$@"; }
 
 function _rpmwhy {
-    capability=$1
-    tag=${2:-""}
-
-    if [[ -n $tag ]] && [[ $tag != $capability ]]
-    then this="${cPKG}${tag}${cCAP}:${capability}${c000}"
-    else this="${cPKG}${capability}${c000}"
-    fi
-
+    local capability=$1
+    local package=$2
+    local this="${cPKG}${package}${c000} provides ${cCAP}${capability}${c000}"
     local IFS=$'\n'
 
-    for requiredby in $(rpmq --whatrequires $capability)
-    do
-        [[ $? == 0 ]] || break
-        echo -e "$this required-by ${cDEP}${requiredby}${c000}"
-    done
+    [[ $VERBOSITY -gt 0 ]] &&
+        for requiredby in $(rpmq --whatrequires $capability)
+        do
+            [[ $? == 0 ]] || break
+            echo -e "$this required-by ${cDEP}${requiredby}${c000}"
+        done
 
-    for recommendedby in $(rpmq --whatrecommends $capability)
-    do
-        [[ $? == 0 ]] || break
-        echo -e "$this recommended-by ${cDEP}${recommendedby}${c000}"
-    done
+    [[ $VERBOSITY -gt 1 ]] &&
+        for recommendedby in $(rpmq --whatrecommends $capability)
+        do
+            [[ $? == 0 ]] || break
+            echo -e "$this recommended-by ${cDEP}${recommendedby}${c000}"
+        done
 
-    for suggestedby in $(rpmq --whatsuggests $capability)
-    do
-        [[ $? == 0 ]] || break
-        echo -e "$this suggested-by ${cDEP}${suggestedby}${c000}"
-    done
+    [[ $VERBOSITY -gt 2 ]] &&
+        for suggestedby in $(rpmq --whatsuggests $capability)
+        do
+            [[ $? == 0 ]] || break
+            echo -e "$this suggested-by ${cDEP}${suggestedby}${c000}"
+        done
 
     # supplements <=> reverse recommends
-    # for supplements in $(QF="[%{SUPPLEMENTS}\n]" rpmq $capability)
-    # do
-    #     [[ $? == 0 ]] || break
-    #     echo -e "$capability supplements ${cDEP}${supplements}${c000}"
-    # done
+    [[ $VERBOSITY -gt 3 ]] &&
+        for supplements in $(QF="[%{SUPPLEMENTS}\n]" rpmq $capability)
+        do
+            [[ $? == 0 ]] || break
+            echo -e "$this supplements ${cDEP}${supplements}${c000}"
+        done
 
     # enhances <=> reverse suggests
-    # for enhances in $(QF="[%{ENHANCES}\n]" rpmq $capability)
-    # do
-    #     [[ $? == 0 ]] || break
-    #     echo -e "$capability enhances ${cDEP}${enhances}${c000}"
-    # done
+    [[ $VERBOSITY -gt 4 ]] &&
+        for enhances in $(QF="[%{ENHANCES}\n]" rpmq $capability)
+        do
+            [[ $? == 0 ]] || break
+            echo -e "$this enhances ${cDEP}${enhances}${c000}"
+        done
 }
 
-while getopts :PCqh-: opt
+################################################################################
+
+while getopts :V:vqh-: opt
 do
     case $opt in
-        P) LOOKUP=false ;;
-        C) LOOKDOWN=false ;;
-        q) VERBOSITY=0 ;;
+        V) VERBOSITY=$OPTARG ;;
+        v) (( VERBOSITY++ )) ;;
+        q) (( VERBOSITY-- )) ;;
         h) _usage ;;
         -) case $OPTARG in
                help) _help ;;
@@ -109,29 +107,34 @@ done
 shift $(($OPTIND - 1))
 [[ -z "$@" ]] && _usage
 
+
 for arg in "$@"
 do
-    _rpmwhy $arg
-
-    $LOOKUP && for providedby in $(rpmq --whatprovides $arg)
+    for providedby in $(rpmq --whatprovides $arg)
     do
-        [[ $? == 0 ]] || break
-        if [[ $providedby != $arg ]]
-        then
-            vecho -e "${cNFO}${arg} provided-by ${providedby}${c000}"
+        [[ $? == 0 ]] ||
+            break
+
+        this="${cCAP}${arg}${c000}"
+        that="${cPKG}${providedby}${c000}"
+        [[ $arg == $providedby ]] ||
+            echo -e "$this provided-by $that"
+
+        _rpmwhy $arg $providedby
+
+        [[ $arg == $providedby ]] ||
             _rpmwhy $providedby $providedby
-        fi
-        #echo
-        $LOOKDOWN && for provided in $(QF="[%{PROVIDES}\n]" rpmq $providedby)
+
+        for provided in $(QF="[%{PROVIDES}\n]" rpmq $providedby)
         do
-            [[ $provided == $arg ]] && continue
-            [[ $provided == $providedby ]] && continue
-            vecho -e "${cNFO}${providedby} provides ${provided}${c000}"
-            _rpmwhy $provided $providedby
+            [[ $provided == $arg ]] &&
+                continue
+            [[ $provided == $providedby ]] ||
+                _rpmwhy $provided $providedby
         done
-        #echo
     done
 done
+
 
 ################################################################################
 exit
@@ -151,45 +154,50 @@ B<rpmwhy> B<-h>|B<--help>|B<--man>|B<--version>
 
 =head1 DESCRIPTION
 
-B<rpmwhy>(1) lists the provided capabilities of a given package, and the
-installed packages which require those capabilities.  Specifically:
-
-=over
-
-=item *
-
-which packages require the capability.
-
-=item *
-
-which packages require the parent package owning the capability.
-Option B<-P> suppresses this.
-
-=item *
-
-which packages require the capabilities provided by the package owning the
-capability.
-Option B<-C> suppresses this.
-
-=back
+B<rpmwhy>(1) lists the dependent packages of a given I<PACKAGENAME>, or the
+dependent packages of the package owning a given I<FILENAME> or I<CAPABILITY>.
 
 =head1 OPTIONS
 
-=head2 General options
+=head2 Verbosity options
 
 =over
 
-=item B<-P>
+=item B<-V> I<NUM>
 
-Suppress details for providing parent package.
+Set verbosity to I<NUM>.
 
-=item B<-C>
+=over
 
-Suppress details for child capabilities of parent package.
+=item B<1>
+
+C<required-by>
+
+=item B<2>
+
+C<recommended-by> [B<default>]
+
+=item B<3>
+
+C<suggested-by>
+
+=item B<4>
+
+C<supplements> [I<experimental>]
+
+=item B<5>
+
+C<enhances> [I<experimental>]
+
+=back
+
+=item B<-v>
+
+Increment verbosity, may be repeated.
 
 =item B<-q>
 
-Suppress program progress output.
+Decrement verbosity, may be repeated.
 
 =back
 
@@ -214,11 +222,6 @@ Manpage.
 Display program version.
 
 =back
-
-=head1 BUGS
-
-B<rpmwhy>(1) calls B<rpm -q> under the hood, potentially I<many> times.
-Therefore it can be slow.
 
 =head1 SEE ALSO
 

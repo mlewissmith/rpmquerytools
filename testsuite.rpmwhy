@@ -1,0 +1,39 @@
+rpmwhy /bin/bash
+- check duplicates:
+  bash provides /bin/bash required-by texlive-kpathsea
+  bash provides /bin/bash required-by texlive-ctable
+  bash provides /bin/bash required-by texlive-seminar
+
+rpmwhy rpmwhy
+- check providedby:
+  rpmwhy provided-by rpmquerytools
+  rpmquerytools provides rpmquerytools required-by ...
+
+rpmwhy /usr/bin/rpmwhy
+- check providedby:
+  /usr/bin/rpmwhy provided-by rpmquerytools
+  rpmquerytools required-by ...
+
+rpmwhy emacs
+- check PACKAGE
+  emacs provides emacs required-by ...
+  emacs provides emacs recommended-by emacs-common
+  emacs provides emacs(bin) required-by emacs-auctex
+  emacs provides emacs-gtk+x11 recommended-by emacs-common
+
+rpmwhy /usr/bin/emacs
+- check CAPABILITY
+  /usr/bin/emacs provided-by emacs-lucid
+  emacs-lucid provides emacs-lucid recommended-by emacs-common
+  emacs-lucid provides emacs(bin) required-by emacs-auctex
+  /usr/bin/emacs provided-by emacs-nw
+  emacs-nw provides emacs-nw required-by ...
+  emacs-nw provides emacs-nw recommended-by emacs-common
+  emacs-nw provides emacs(bin) required-by emacs-auctex
+  emacs-nw provides emacs-nox required-by ...
+  /usr/bin/emacs provided-by emacs
+  emacs provides emacs required-by ...
+  emacs provides emacs recommended-by emacs-common
+  emacs provides emacs supplements (xorg-x11-server-Xorg and emacs-common)
+  emacs provides emacs(bin) required-by emacs-auctex
+  emacs provides emacs-gtk+x11 recommended-by emacs-common
