@@ -115,7 +115,7 @@ function _rpmwhy {
 ################################################################################
 
 _init_colour
-while getopts :V:vqDh-: opt
+while getopts :V:vqh-: opt
 do
     case $opt in
         V) VERBOSITY=$OPTARG ;;
