@@ -4,35 +4,6 @@ set -u
 VERBOSITY=2
 DEBUG=false
 
-ANSI_RESET="\e[0m"
-ANSI_BOLD="\e[1m"
-ANSI_FAINT="\e[2m"
-ANSI_ITALIC="\e[3m"
-ANSI_UNDERLINE="\e[4m"
-
-ANSI_BLACK="\e[30m"
-ANSI_RED="\e[31m"
-ANSI_GREEN="\e[32m"
-ANSI_YELLOW="\e[33m"
-ANSI_BLUE="\e[34m"
-ANSI_MAGENTA="\e[35m"
-ANSI_CYAN="\e[36m"
-ANSI_WHITE="\e[37m"
-
-ANSI_BRIGHTBLACK="\e[90m"
-ANSI_BRIGHTRED="\e[91m"
-ANSI_BRIGHTGREEN="\e[92m"
-ANSI_BRIGHTYELLOW="\e[93m"
-ANSI_BRIGHTBLUE="\e[94m"
-ANSI_BRIGHTMAGENTA="\e[95m"
-ANSI_BRIGHTCYAN="\e[96m"
-ANSI_BRIGHTWHITE="\e[97m"
-
-cPKG=${ANSI_BOLD}
-cCAP=${ANSI_FAINT}${ANSI_ITALIC}
-cDEP=${ANSI_BOLD}${ANSI_GREEN}
-c000=${ANSI_RESET}
-
 ################################################################################
 
 function echoerr { >&2 echo "$@"; }
@@ -40,6 +11,59 @@ function _usage { pod2usage --verbose 0 $0; exit ${1:-0}; }
 function _help { pod2usage --verbose 1 $0; exit ${1:-0}; }
 function _longhelp { pod2usage --verbose 2 $0; exit ${1:-0}; }
 function _version { echo "@PACKAGE_STRING@"; exit ${1:-0}; }
+
+function _init_colour {
+    local incolour=
+    if [[ -z ${1+x} ]]
+    then
+        if [[ -n ${NO_COLOR+x} ]]
+        then incolour=false
+        elif [[ ! -t 1 ]]
+        then incolour=false
+        else incolour=true
+        fi
+    elif [[ $1 -eq 0 ]]
+    then incolour=false
+    else incolour=true
+    fi
+
+    local ANSI_RESET="\e[0m"
+    local ANSI_BOLD="\e[1m"
+    local ANSI_FAINT="\e[2m"
+    local ANSI_ITALIC="\e[3m"
+    local ANSI_UNDERLINE="\e[4m"
+
+    local ANSI_BLACK="\e[30m"
+    local ANSI_RED="\e[31m"
+    local ANSI_GREEN="\e[32m"
+    local ANSI_YELLOW="\e[33m"
+    local ANSI_BLUE="\e[34m"
+    local ANSI_MAGENTA="\e[35m"
+    local ANSI_CYAN="\e[36m"
+    local ANSI_WHITE="\e[37m"
+
+    local ANSI_BRIGHTBLACK="\e[90m"
+    local ANSI_BRIGHTRED="\e[91m"
+    local ANSI_BRIGHTGREEN="\e[92m"
+    local ANSI_BRIGHTYELLOW="\e[93m"
+    local ANSI_BRIGHTBLUE="\e[94m"
+    local ANSI_BRIGHTMAGENTA="\e[95m"
+    local ANSI_BRIGHTCYAN="\e[96m"
+    local ANSI_BRIGHTWHITE="\e[97m"
+
+    if $incolour
+    then
+        cPKG=${ANSI_BOLD}
+        cCAP=${ANSI_FAINT}${ANSI_ITALIC}
+        cDEP=${ANSI_BOLD}${ANSI_GREEN}
+        c000=${ANSI_RESET}
+    else
+        cPKG=
+        cCAP=
+        cDEP=
+        c000=
+    fi
+}
 
 function rpmq { rpm --query --queryformat=${QF:-'%{NAME}\n'} --nodigest --nosignature "$@"; }
 
@@ -91,6 +115,7 @@ function _rpmwhy {
 
 ################################################################################
 
+_init_colour
 while getopts :V:vqDh-: opt
 do
     case $opt in
@@ -103,6 +128,9 @@ do
                help) _help ;;
                man) _longhelp ;;
                version) _version ;;
+	       colour|color) _init_colour 1 ;;
+	       no-color|no-colour) _init_colour 0 ;;
+	       nocolor|nocolour) _init_colour 0 ;;
                *) _usage 1 ;;
            esac
            ;;
