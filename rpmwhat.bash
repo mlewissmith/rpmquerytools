@@ -72,43 +72,39 @@ function _rpmwhat {
 
     [[ $VERBOSITY -ge 1 ]] && for required in $(QF='[%{REQUIRES}\n]' rpmq $package)
     do
-        echo -ne "${cPKG}${package}${c000} requires ${cCAP}${required}${c000}"
+        this="${cPKG}${package}${c000} requires ${cCAP}${required}${c000}"
         providedby=$(rpmq --whatprovides $required) &&
-            echo -ne " provided-by ${cDEP}$providedby${c000}"
-        echo
+            echo -e "$this provided-by ${cDEP}$providedby${c000}"
     done
 
     [[ $VERBOSITY -ge 2 ]] && for recommended in $(QF='[%{RECOMMENDS}\n]' rpmq $package)
     do
-        echo -ne "${cPKG}${package}${c000} recommends ${cCAP}${recommended}${c000}"
+        this="${cPKG}${package}${c000} recommends ${cCAP}${recommended}${c000}"
         providedby=$(rpmq --whatprovides $recommended) &&
-            echo -ne " provided-by ${cDEP}$providedby${c000}"
-        echo
+            echo -e "$this provided-by ${cDEP}$providedby${c000}"
     done
 
     [[ $VERBOSITY -ge 3 ]] && for suggested in $(QF='[%{SUGGESTS}\n]' rpmq $package)
     do
-        echo -ne "${cPKG}${package}${c000} suggests ${cCAP}${suggested}${c000}"
+        this="${cPKG}${package}${c000} suggests ${cCAP}${suggested}${c000}"
         providedby=$(rpmq --whatprovides $suggested) &&
-            echo -ne " provided-by ${cDEP}$providedby${c000}"
-        echo
+            echo -e "$this provided-by ${cDEP}$providedby${c000}"
     done
 
     [[ $VERBOSITY -ge 4 ]] && for supplementedby in $(rpmq --whatsupplements $package)
     do
         [[ $? == 0 ]] || break
-        echo -ne "${cPKG}${package}${c000} supplemented-by ${cCAP}${supplementedby}${c000}"
+        this="${cPKG}${package}${c000} supplemented-by ${cCAP}${supplementedby}${c000}"
         providedby=$(rpmq --whatprovides $supplementedby) &&
-            echo -ne " provided-by ${cDEP}$providedby${c000}"
-        echo
+            echo -e "$this provided-by ${cDEP}$providedby${c000}"
     done
 
     [[ $VERBOSITY -ge 5 ]] && for enhancededby in $(rpmq --whatenhances $package)
     do
         [[ $? == 0 ]] || break
-        echo -ne "${cPKG}${package}${c000} enhanced-by ${cCAP}${enhancedby}${c000}"
+        this="${cPKG}${package}${c000} enhanced-by ${cCAP}${enhancedby}${c000}"
         providedby=$(rpmq --whatprovides $enhancedby) &&
-            echo -ne " provided-by ${cDEP}$providedby${c000}"
+            echo -e "$this provided-by ${cDEP}$providedby${c000}"
         echo
     done
 }
