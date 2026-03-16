@@ -304,12 +304,14 @@ __pod2html = find_program(
   required : false,
   disabler : true,
 )
+__pod2html_opts = [ '--backlink', '--header', '--index' ]
 
 __man = find_program(
   'man',
   required : false,
   disabler : true,
 )
+__man_opts = [ '-t' ]
 
 __ps2pdf = find_program(
   'ps2pdf',
@@ -321,7 +323,7 @@ __ps2pdf = find_program(
 rpmwhy_1_html = custom_target(
   input       : rpmwhy,
   output      : fs.name(rpmwhy) + '.1.html',
-  command     : [ __pod2html, '--infile=./@INPUT@' ],
+  command     : [ __pod2html, __pod2html_opts, '--infile=./@INPUT@' ],
   capture     : true,
   install     : true,
   install_dir : configx.get('htmldir'),
@@ -331,7 +333,7 @@ rpmwhy_1_html = custom_target(
 rpmwhy_1_ps = custom_target(
   input       : rpmwhy_1,
   output      : fs.name(rpmwhy_1.full_path()) + '.ps',
-  command     : [ __man, '-t', './@INPUT@' ],
+  command     : [ __man, __man_opts, './@INPUT@' ],
   capture     : true,
   install     : true,
   install_dir : configx.get('htmldir'),
@@ -351,7 +353,7 @@ rpmwhy_1_pdf = custom_target(
 rpmwhat_1_html = custom_target(
   input       : rpmwhat,
   output      : fs.name(rpmwhat) + '.1.html',
-  command     : [ __pod2html, '--infile=./@INPUT@' ],
+  command     : [ __pod2html, __pod2html_opts, '--infile=./@INPUT@' ],
   capture     : true,
   install     : true,
   install_dir : configx.get('htmldir'),
@@ -361,7 +363,7 @@ rpmwhat_1_html = custom_target(
 rpmwhat_1_ps = custom_target(
   input       : rpmwhat_1,
   output      : fs.name(rpmwhat_1.full_path()) + '.ps',
-  command     : [ __man, '-t', './@INPUT@' ],
+  command     : [ __man, __man_opts, './@INPUT@' ],
   capture     : true,
   install     : true,
   install_dir : configx.get('htmldir'),
@@ -381,7 +383,7 @@ rpmwhat_1_pdf = custom_target(
 rpmlsf_1_html = custom_target(
   input       : rpmlsf,
   output      : fs.name(rpmlsf) + '.1.html',
-  command     : [ __pod2html, '--infile=./@INPUT@' ],
+  command     : [ __pod2html, __pod2html_opts, '--infile=./@INPUT@' ],
   capture     : true,
   install     : true,
   install_dir : configx.get('htmldir'),
@@ -391,7 +393,7 @@ rpmlsf_1_html = custom_target(
 rpmlsf_1_ps = custom_target(
   input       : rpmlsf_1,
   output      : fs.name(rpmlsf_1.full_path()) + '.ps',
-  command     : [ __man, '-t', './@INPUT@' ],
+  command     : [ __man, __man_opts, './@INPUT@' ],
   capture     : true,
   install     : true,
   install_dir : configx.get('htmldir'),
@@ -411,7 +413,7 @@ rpmlsf_1_pdf = custom_target(
 rpmquerytools_7_html = custom_target(
   input       : rpmquerytools_pod,
   output      : fs.name(rpmquerytools_7.full_path()) + '.html',
-  command     : [ __pod2html, '--infile=./@INPUT@' ],
+  command     : [ __pod2html, __pod2html_opts, '--infile=./@INPUT@' ],
   capture     : true,
   install     : true,
   install_dir : configx.get('htmldir'),
@@ -421,7 +423,7 @@ rpmquerytools_7_html = custom_target(
 rpmquerytools_7_ps = custom_target(
   input       : rpmquerytools_7,
   output      : fs.name(rpmquerytools_7.full_path()) + '.ps',
-  command     : [ __man, '-t', './@INPUT@' ],
+  command     : [ __man, __man_opts, './@INPUT@' ],
   capture     : true,
   install     : true,
   install_dir : configx.get('htmldir'),
