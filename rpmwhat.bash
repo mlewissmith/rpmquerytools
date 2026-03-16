@@ -107,6 +107,8 @@ function _rpmwhat {
             echo -e "$this provided-by ${cDEP}$providedby${c000}"
         echo
     done
+
+    return 0
 }
 
 ################################################################################
@@ -139,10 +141,12 @@ shift $(($OPTIND - 1))
 for arg in "$@"
 do
     IFS=$'\n'
-    pkg=$(rpmq --whatprovides $arg)
-    [[ $? != 0 ]] && echoerr "$pkg" && continue
-    [[ $pkg == $arg ]] || echo -e "${cCAP}${arg}${c000} provided-by ${cPKG}${pkg}${c000}"
-    _rpmwhat $pkg
+    for pkg in $(rpmq --whatprovides $arg)
+    do
+        [[ $? != 0 ]] && echoerr "$pkg" && continue
+        [[ $pkg == $arg ]] || echo -e "${cCAP}${arg}${c000} provided-by ${cPKG}${pkg}${c000}"
+        _rpmwhat $pkg
+    done
 done
 
 
